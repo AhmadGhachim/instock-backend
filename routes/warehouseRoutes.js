@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.route('/').get(warehouseController.getWarehouses)
 
+router.route('/:id').get(warehouseController.getWarehouseById)
+
 export default router;
