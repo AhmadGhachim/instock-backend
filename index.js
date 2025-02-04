@@ -1,6 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+
+import warehouseRoutes from "./routes/warehouseRoutes.js"
+
 const app = express();
 
 app.use(cors());
@@ -11,6 +14,8 @@ const PORT = process.env.PORT || 8000;
 app.get("/", (req, res) => {
     res.send("Welcome to the In-Stock API Backend!");
 });
+
+app.use('/api/warehouses', warehouseRoutes);
 
 
 app.listen(PORT, () => {
