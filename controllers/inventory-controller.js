@@ -6,7 +6,9 @@ const getInventoryList = async (_req, res) => {
   try {
     const data = await knex("inventories");
     res.status(200).json(data);
-  } catch (error) {}
+  } catch (error) {
+    res.status(400).send(`Error retrieving inventory: ${err}`)
+  }
 };
 
-export {};
+export { getInventoryList };
