@@ -173,4 +173,31 @@ const createWarehouse = async (req, res) => {
   }
 };
 
-export { getWarehouses, getWarehouseById, updateWarehouse, createWarehouse };
+const deleteWarehouse = async (req, res) => {
+  const warehouseId = req.params.id;
+
+  try {
+    const warehouse = await knex("warehouses")
+      .where({ id: warehouseId })
+      .first();
+    if (!warehouse) {
+      return res
+        .status(404)
+        .json({ message: `warehouse ID ${warehouse} not found` });
+    }
+    await knex("inventories").where({ warehouse_id: warehouseId }).del();
+    await knex("warehouses").where({ id: warehouseId }).del();
+    res.status(204).send();
+  } catch (error) {
+    console.error(`error deleting warehouse:${warehouseId}${error}`);
+    res.status(500).json({ message: "Failed to delete warehouse" });
+  }
+};
+
+export {
+  getWarehouses,
+  getWarehouseById,
+  updateWarehouse,
+  createWarehouse,
+  deleteWarehouse,
+};

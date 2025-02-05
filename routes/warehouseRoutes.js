@@ -11,5 +11,6 @@ router
   .put(warehouseController.updateWarehouse);
 
 router.route("/").post(warehouseController.createWarehouse);
+router.route("/:id").delete(warehouseController.deleteWarehouse);
 
 export default router;
