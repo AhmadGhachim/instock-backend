@@ -32,7 +32,81 @@ const getWarehouseById = async (req, res) => {
     }
 };
 
-export{
-    getWarehouses,
-    getWarehouseById,
-}
+const updateWarehouse = async (req, res) => {
+    const warehouseId = req.params.id;
+
+    const {
+        warehouse_name,
+        address,
+        city,
+        country,
+        contact_name,
+        contact_position,
+        contact_phone,
+        contact_email,
+    } = req.body;
+
+    if (
+        !warehouse_name ||
+        !address ||
+        !city ||
+        !country ||
+        !contact_name ||
+        !contact_position ||
+        !contact_phone ||
+        !contact_email
+    ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const phonePattern = /^\D*?(\d\D*){11}$/;
+    const emailPattern = /^[^@]+@[^@]+\.[^@]+$/;
+
+    if (!phonePattern.test(contact_phone)) {
+        return res.status(400).json({
+            message:
+                "Invalid phone number: must contain exactly 11 digits (e.g., +1 (555) 555-5555).",
+        });
+    }
+
+    if (!emailPattern.test(contact_email)) {
+        return res.status(400).json({
+            message:
+                "Invalid email format: must contain one '@' and follow this format warehouse@example.com.",
+        });
+    }
+
+    const newWarehouse = {
+        warehouse_name,
+        address,
+        city,
+        country,
+        contact_name,
+        contact_position,
+        contact_phone,
+        contact_email,
+    };
+
+    try {
+        const warehouse = await knex("warehouses")
+            .where({ id: warehouseId })
+            .first();
+        if (!warehouse) {
+            return res
+                .status(404)
+                .json({ message: `Warehouse with ID ${warehouseId} not found` });
+        }
+
+        await knex("warehouses").where({ id: warehouseId }).update(newWarehouse);
+
+        const updatedWarehouse = await knex("warehouses")
+            .where({ id: warehouseId })
+            .first();
+        return res.status(200).json(updatedWarehouse);
+    } catch (error) {
+        console.log(`Error updating warehouse: ${error}`);
+        return res.status(500).json({ message: "Failed to update warehouse" });
+    }
+};
+
+export { getWarehouses, getWarehouseById, updateWarehouse };
