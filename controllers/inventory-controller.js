@@ -112,9 +112,51 @@ const createInventoryItem = async (req, res) => {
   }
 };
 
+const editInventoryItem = async (req, res) => {
+  const inventoryItemID = req.params.id;
+
+  const { item_name, description, category, status, quantity, warehouse_name } =
+    req.body;
+
+  if (
+    !item_name ||
+    !description ||
+    !category ||
+    !status ||
+    !quantity ||
+    !warehouse_name
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const newInventoryItem = { item_name, description, category, status, quantity, warehouse_name };
+
+  try {
+    const inventoryItem = await knex("inventories")
+      .where({ id: inventoryItemID })
+      .first(); 
+
+    if (!inventoryItem) {
+      return res.status(404).json({ message: "Could not find inventory item" });
+    }
+
+    await knex("inventories").where({ id: inventoryItemID }).update(newInventoryItem);
+
+    const updatedInventoryItem = await knex("inventories")
+      .where({ id: inventoryItemID })
+      .first();
+
+    return res.status(200).json(updatedInventoryItem);
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export {
   getInventoryList,
   getItemById,
   getInventoryByWarehouse,
   createInventoryItem,
+  editInventoryItem
 };

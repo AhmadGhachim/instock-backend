@@ -8,6 +8,7 @@ router
   .get(inventoryController.getInventoryList)
   .post(inventoryController.createInventoryItem);
 router.route("/:id").get(inventoryController.getItemById);
+router.route("/:id").put(inventoryController.editInventoryItem);
 router
   .route("/:id/inventories")
   .get(inventoryController.getInventoryByWarehouse);
