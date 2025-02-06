@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 
 import warehouseRoutes from "./routes/warehouseRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/warehouses", warehouseRoutes);
+
+app.use("/api/inventory", inventoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server listening on PORT ${PORT}`);
