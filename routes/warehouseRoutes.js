@@ -9,6 +9,10 @@ router.route("/:id")
   .get(warehouseController.getWarehouseById)
   .put(warehouseController.updateWarehouse)
     .delete(warehouseController.deleteWarehouse);
+  
+    router
+  .route("/:id/inventories")
+  .get(warehouseController.getInventoryByWarehouse)
 
 
 

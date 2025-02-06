@@ -44,29 +44,6 @@ const getItemById = async (req, res) => {
   }
 };
 
-const getInventoryByWarehouse = async (req, res) => {
-  const warehouseId = req.params.id;
-
-  try {
-    const warehouseExists = await knex("warehouses")
-      .where("id", warehouseId)
-      .first();
-
-    if (!warehouseExists) {
-      return res.status(404).json({ error: "Warehouse not found" });
-    }
-
-    const inventories = await knex("inventories")
-      .where("warehouse_id", warehouseId)
-      .select("id", "item_name", "category", "status", "quantity");
-
-    res.status(200).json(inventories);
-  } catch (error) {
-    console.error("Error fetching inventories by warehouse", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 const createInventoryItem = async (req, res) => {
   const { warehouse_id, item_name, description, category, status, quantity } =
     req.body;
@@ -135,7 +112,6 @@ const deleteInventoryItem = async (req, res) => {
 export {
   getInventoryList,
   getItemById,
-  getInventoryByWarehouse,
   createInventoryItem,
   deleteInventoryItem,
 };
