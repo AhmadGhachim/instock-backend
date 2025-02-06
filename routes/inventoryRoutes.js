@@ -10,6 +10,10 @@ router
 router.route("/:id").get(inventoryController.getItemById);
 router.route("/:id").put(inventoryController.editInventoryItem);
 router
+  .route("/:id")
+  .get(inventoryController.getItemById)
+  .delete(inventoryController.deleteInventoryItem);
+router
   .route("/:id/inventories")
   .get(inventoryController.getInventoryByWarehouse);
 
