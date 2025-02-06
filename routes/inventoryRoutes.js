@@ -7,7 +7,10 @@ router
   .route("/")
   .get(inventoryController.getInventoryList)
   .post(inventoryController.createInventoryItem);
-router.route("/:id").get(inventoryController.getItemById);
+router
+  .route("/:id")
+  .get(inventoryController.getItemById)
+  .delete(inventoryController.deleteInventoryItem);
 router
   .route("/:id/inventories")
   .get(inventoryController.getInventoryByWarehouse);
