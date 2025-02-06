@@ -13,17 +13,13 @@ app.use(express.json());
 const PORT = process.env.PORT || 8000;
 
 app.get("/", (req, res) => {
-    res.send("Welcome to the In-Stock API Backend!");
+  res.send("Welcome to the In-Stock API Backend!");
 });
 
-app.use('/api/warehouses', warehouseRoutes);
+app.use("/api/warehouses", warehouseRoutes);
 
-app.use('/api/inventory', inventoryRoutes);
-
+app.use("/api/inventory", inventoryRoutes);
 
 app.listen(PORT, () => {
-    console.log(`Server listening on PORT ${PORT}`);
+  console.log(`Server listening on PORT ${PORT}`);
 });
-
-
-
