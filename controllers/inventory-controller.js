@@ -4,10 +4,12 @@ const knex = initKnex(configuration);
 
 const getInventoryList = async (_req, res) => {
   try {
-    const data = await knex("inventories");
+    const data = await knex("inventories")
+      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id") 
+      .select("inventories.*", "warehouses.warehouse_name"); 
     res.status(200).json(data);
   } catch (error) {
-    res.status(400).send(`Error retrieving inventory: ${err}`);
+    res.status(400).send(`Error retrieving inventory: ${error.message}`); 
   }
 };
 
