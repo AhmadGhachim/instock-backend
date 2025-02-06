@@ -11,8 +11,5 @@ router
   .route("/:id")
   .get(inventoryController.getItemById)
   .delete(inventoryController.deleteInventoryItem);
-router
-  .route("/:id/inventories")
-  .get(inventoryController.getInventoryByWarehouse);
 
 export default router;
