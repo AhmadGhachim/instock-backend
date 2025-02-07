@@ -112,7 +112,6 @@ const createInventoryItem = async (req, res) => {
   }
 };
 
-
 const editInventoryItem = async (req, res) => {
   const inventoryItemID = req.params.id;
 
@@ -129,26 +128,55 @@ const editInventoryItem = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
+  if (isNaN(quantity)) {
+    return res.status(400).json({ message: "Quantity must be a number" });
+  }
 
-  const newInventoryItem = { item_name, description, category, status, quantity, warehouse_name };
+  const warehouse = await knex("warehouses").where({ warehouse_name }).first();
+
+  if (!warehouse) {
+    return res.status(400).json({ message: "Invalid warehouse name" });
+  }
+
+  const warehouse_id = warehouse.id;
+
+  const newInventoryItem = {
+    item_name,
+    description,
+    category,
+    status,
+    quantity,
+    warehouse_id,
+  };
 
   try {
     const inventoryItem = await knex("inventories")
       .where({ id: inventoryItemID })
-      .first(); 
+      .first();
 
     if (!inventoryItem) {
-      return res.status(404).json({ message: "Could not find inventory item" });
+      return res.status(404).json({ message: "Inventory item not found" });
     }
 
-    await knex("inventories").where({ id: inventoryItemID }).update(newInventoryItem);
+    await knex("inventories")
+      .where({ id: inventoryItemID })
+      .update(newInventoryItem);
 
     const updatedInventoryItem = await knex("inventories")
-      .where({ id: inventoryItemID })
+      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
+      .select(
+        "inventories.id",
+        "inventories.item_name",
+        "inventories.description",
+        "inventories.category",
+        "inventories.status",
+        "inventories.quantity",
+        "warehouses.warehouse_name"
+      )
+      .where({ "inventories.id": inventoryItemID })
       .first();
 
     return res.status(200).json(updatedInventoryItem);
-
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -180,5 +208,5 @@ export {
   getInventoryByWarehouse,
   createInventoryItem,
   editInventoryItem,
-  deleteInventoryItem
+  deleteInventoryItem,
 };
