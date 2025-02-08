@@ -109,6 +109,29 @@ const updateWarehouse = async (req, res) => {
   }
 };
 
+const getInventoryByWarehouse = async (req, res) => {
+  const warehouseId = req.params.id;
+
+  try {
+    const warehouseExists = await knex("warehouses")
+      .where("id", warehouseId)
+      .first();
+
+    if (!warehouseExists) {
+      return res.status(404).json({ error: "Warehouse not found" });
+    }
+
+    const inventories = await knex("inventories")
+      .where("warehouse_id", warehouseId)
+      .select("id", "item_name", "category", "status", "quantity");
+
+    res.status(200).json(inventories);
+  } catch (error) {
+    console.error("Error fetching inventories by warehouse", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 //post
 const createWarehouse = async (req, res) => {
   const {
@@ -173,4 +196,32 @@ const createWarehouse = async (req, res) => {
   }
 };
 
-export { getWarehouses, getWarehouseById, updateWarehouse, createWarehouse };
+const deleteWarehouse = async (req, res) => {
+  const warehouseId = req.params.id;
+
+  try {
+    const warehouse = await knex("warehouses")
+      .where({ id: warehouseId })
+      .first();
+    if (!warehouse) {
+      return res
+        .status(404)
+        .json({ message: `warehouse ID ${warehouse} not found` });
+    }
+    await knex("inventories").where({ warehouse_id: warehouseId }).del();
+    await knex("warehouses").where({ id: warehouseId }).del();
+    res.status(204).send();
+  } catch (error) {
+    console.error(`error deleting warehouse:${warehouseId}${error}`);
+    res.status(500).json({ message: "Failed to delete warehouse" });
+  }
+};
+
+export {
+  getWarehouses,
+  getWarehouseById,
+  updateWarehouse,
+  createWarehouse,
+  deleteWarehouse,
+  getInventoryByWarehouse,
+};
